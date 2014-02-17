@@ -1054,8 +1054,8 @@ msgid ""
 "This outing is not validated. You should <a href=\"%(confirmed_url)s"
 "\">confirmed it!</a>"
 msgstr ""
-"Cette sortie n'est pas validée. Vous devriez <a href=\"%(confirmed_url)s"
-"\">la confirmer !</a>"
+"Esta salida no esta confirmada. Deberia <a href=\"%(confirmed_url)s"
+"\">confirmarla !</a>"
 
 #: templates/RandoAmisSecours/outing/details.html:59
 msgid "Alert at"
@@ -1069,7 +1069,7 @@ msgstr "Salida con retraso"
 #, python-format
 msgid "%(full_name)s is really late, you can try to contact him:"
 msgstr ""
-"%(full_name)s est très en retard, vous pouvez essayer de le contacter :"
+"%(full_name)s no ha llegado a la hora prevista, puede intentar contactar con el(la) :"
 
 #: templates/RandoAmisSecours/outing/index.html:38
 msgid "new"
@@ -1120,7 +1120,7 @@ msgstr "Suprimir la salida"
 #: templates/RandoAmisSecours/outing/index.html:176
 #, python-format
 msgid "Are you sure you want to delete the outing: «%(name)s» ?"
-msgstr "Etes-vous sur de vouloir supprimer la sortie : «%(name)s» ?"
+msgstr "Seguro que quiere suprimir la salida : «%(name)s» ?"
 
 #: templates/RandoAmisSecours/outing/index.html:107
 #: templates/RandoAmisSecours/outing/index.html:240
@@ -1144,7 +1144,7 @@ msgstr "Principio"
 #: templates/RandoAmisSecours/outing/index.html:157
 #: templates/RandoAmisSecours/outing/index.html:277
 msgid "End planned"
-msgstr "Fin planifiée"
+msgstr "Fin previsto"
 
 #: templates/RandoAmisSecours/outing/index.html:189
 #: templates/RandoAmisSecours/outing/index.html:294
@@ -1173,36 +1173,36 @@ msgstr "La contraseña ha sido cambiada"
 
 #: views/friends.py:66
 msgid "[R.A.S.] Friend request"
-msgstr "[R.A.S.] Demande d'ajout à la liste d'amis"
+msgstr "[R.A.S.] Peticion de un amigo"
 
 #: views/friends.py:74
 #, python-format
 msgid "Friend request sent to «%(name)s»"
-msgstr "Demande envoyée à «%(name)s»"
+msgstr "Peticion enviada a «%(name)s»"
 
 #: views/friends.py:88
 msgid "[R.A.S.] Friend request accepted"
-msgstr "[R.A.S.] Demande d'ajout à la liste d'amis acceptée"
+msgstr "[R.A.S.] Peticion de un amigo aceptada"
 
 #: views/friends.py:93
 #, python-format
 msgid "«%(name)s» added to your friends"
-msgstr "«%(name)s» ajouté à vos amis"
+msgstr "«%(name)s» añadido a sus amigos"
 
 #: views/friends.py:104
 #, python-format
 msgid "Request from «%(name)s» refused"
-msgstr "La demande de «%(name)s» a été refusée"
+msgstr "La peticion a «%(name)s» ha sido rechazada"
 
 #: views/friends.py:114
 #, python-format
 msgid "Request to «%(name)s» canceled"
-msgstr "La demande à «%(name)s» a été annulée"
+msgstr "La peticion a «%(name)s» ha sido cancelada"
 
 #: views/friends.py:123
 #, python-format
 msgid "Removed «%(name)s» from friend list"
-msgstr "«%(name)s» supprimé de votre liste d'amis"
+msgstr "«%(name)s» suprimido de su lista de amigos"
 
 #: views/outing.py:42
 msgid "Outing name"
@@ -1210,30 +1210,30 @@ msgstr "Nombre de la salida"
 
 #: views/outing.py:56
 msgid "Beginning should happens first"
-msgstr "La fecha de principio de la salida tiene que ser "
+msgstr "La fecha de principio de la salida tiene que ocurrir primero"
 
 #: views/outing.py:57
 msgid "Ending should happens after the beginning"
-msgstr "La fin doit arriver après le début"
+msgstr "El fin de la salida tiene que ocurrir despues del principio de aquella"
 
 #: views/outing.py:58
 msgid "Alert should happens at the end"
-msgstr "L'alerte doit arriver après la fin"
+msgstr "La alerta tiene que ocurrir despues del fin de la salida"
 
 #: views/outing.py:110
 msgid ""
 "Outing successfully created. The outing is still a draft and should be "
 "confirmed."
 msgstr ""
-"La sortie a été crée. Celle-ci est encore un brouillon et doit être validée."
+"La salida ha sido creada. Es todavia un borrador y tiene que ser validada."
 
 #: views/outing.py:128 views/outing.py:160
 msgid "Only the outing owner can update it"
-msgstr "Seul le créateur d'une sortie peux la modifier"
+msgstr "Solo el creador de una salida puede modificarla"
 
 #: views/outing.py:148
 msgid "Only the outing owner can delete it"
-msgstr "Seul le créateur d'une sortie peux la supprimer"
+msgstr "Solo el creador de una salida puede suprimirla"
 
 #: views/outing.py:150
 #, python-format
@@ -1247,7 +1247,7 @@ msgstr "«%(name)s» ya esta confimada"
 
 #: views/outing.py:173
 msgid "Only the outing owner can finish it"
-msgstr "Seul le créateur d'une sortie peux la terminer"
+msgstr "Solo el creador de una salida puede acabarla"
 
 #: views/outing.py:178
 #, python-format
