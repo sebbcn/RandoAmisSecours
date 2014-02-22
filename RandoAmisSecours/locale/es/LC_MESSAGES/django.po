@@ -186,13 +186,13 @@ msgid ""
 "You will be <a href=\"%(URL)s\">redirected</a> to the login page in 5 "
 "seconds ..."
 msgstr ""
-"Vous allez être <a href=\"%(URL)s\">redirigé</a> sur la page de connexion "
-"dans 5 secondes ..."
+"Va a ser <a href=\"%(URL)s\">redireccionado</a> a la página de conexión "
+"dentro de 5 segundos ..."
 
 #: templates/RandoAmisSecours/account/logged_out.html:4
 #: templates/RandoAmisSecours/account/logged_out.html:34
 msgid "Logged out"
-msgstr ""
+msgstr "Desconectado"
 
 #: templates/RandoAmisSecours/account/logged_out.html:35
 msgid "Thanks for using RandoAmisSecours."
@@ -200,7 +200,7 @@ msgstr "Gracias por utilizar RandoAmisSecours."
 
 #: templates/RandoAmisSecours/account/logged_out.html:36
 msgid "Log in again"
-msgstr ""
+msgstr "Volver a conectarse"
 
 #: templates/RandoAmisSecours/account/login.html:44
 msgid ""
@@ -208,7 +208,7 @@ msgid ""
 "case-sensitive"
 msgstr ""
 "<strong>Usuario y/o contraseña erroneo(s)</strong> : Recuerde que los dos "
-"campos son sensibles à la casse"
+"campos respetan las minusculas y mayusculas"
 
 #: templates/RandoAmisSecours/account/login.html:50
 msgid "Please sign in"
@@ -312,7 +312,7 @@ msgstr "Cambiar mi contraseña"
 
 #: templates/RandoAmisSecours/account/password_reset_confirm.html:51
 msgid "Password reset unsuccessful"
-msgstr ""
+msgstr "Cambio de contraseña erroneo"
 
 #: templates/RandoAmisSecours/account/password_reset_confirm.html:56
 msgid ""
@@ -330,14 +330,16 @@ msgstr "Reinicializacion de contraseña acabada"
 msgid ""
 "We've emailed you instructions for setting your password to the email "
 "address you submitted. You should be receiving it shortly."
-msgstr ""
+msgstr "Le hemos enviado instrucciones para definir su contraseña a su direccion"
+"de correo. Debería recibirlo dentro de poco."
 
 #: templates/RandoAmisSecours/account/password_reset_email.txt:2
 #, python-format
 msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at %(site_name)s."
-msgstr ""
+msgstr "Recibe este correo porque ha pedido una reinicialización de contraseña para "
+"su cuenta en %(site_name)s."
 
 #: templates/RandoAmisSecours/account/password_reset_email.txt:4
 msgid "Please go to the following page and choose a new password:"
@@ -878,7 +880,7 @@ msgstr "No esperes el accidente !"
 
 #: templates/RandoAmisSecours/main/index.html:33
 msgid "Let your friends some information about your destination."
-msgstr "Laissez à vos amis des précisions sur votre destination."
+msgstr "Indica a sus amigos informaciones sobre sus salidas."
 
 #: templates/RandoAmisSecours/main/index.html:35
 #: templates/RandoAmisSecours/outing/index.html:38
@@ -895,9 +897,9 @@ msgid ""
 "contact you in case of emergency. We will never use these information for "
 "something else."
 msgstr ""
-"Créez un compte sur R.A.S. Nous gardons seulement les informations "
-"nécessaire pour vous contacter en cas d'urgence. Nous n'utiliserons jamais "
-"ces informations à d'autres fins."
+"Crea su cuenta en R.A.S. Conservamos solo las informaciones que se requieren  "
+"para contactarle en caso de emergencia. No utilizaremos sus datos para cualquier "
+"otra fin."
 
 #: templates/RandoAmisSecours/main/index.html:47
 msgid "Register »"
@@ -912,8 +914,8 @@ msgid ""
 "Declare every planned outings with beginning and ending. Your friends will "
 "be alerted if you are not back on time."
 msgstr ""
-"Déclarez les sorties que vous prévoyez en indiquant un début et une fin. Vos "
-"amis seront alors alertés en cas de retard."
+"Apunte sus salidas previstas con sus tiempos de principio y fin. Sus amigos"
+"recibiran alerta si no vuelve a tiempo."
 
 #: templates/RandoAmisSecours/main/index.html:52
 msgid "Create »"
@@ -928,8 +930,8 @@ msgid ""
 "Link your profile with friends profiles. Only your friends will see your "
 "outings unless you are late."
 msgstr ""
-"Connectez votre profil avec celui de vos amis. Seuls vos amis verrons vos "
-"sorties tant que vous n'êtes pas en retard."
+"Conecta su perfil con el de sus amigos. Solo sus amigos verrán sus salidas "
+"a menos que usted no este de vuelta a tiempo."
  
 #: templates/RandoAmisSecours/main/index.html:57
 msgid "R.A.S. will email your friends if you are not back on time."
@@ -977,7 +979,7 @@ msgstr "Longitud"
 #: templates/RandoAmisSecours/outing/create.html:70
 #, python-format
 msgid "Timing (in %(TIME_ZONE)s)"
-msgstr "Timing (pour %(TIME_ZONE)s)"
+msgstr "Tiempo (para %(TIME_ZONE)s)"
 
 #: templates/RandoAmisSecours/outing/create.html:72
 #: templates/RandoAmisSecours/outing/details.html:55
@@ -1007,8 +1009,8 @@ msgid ""
 "RandoAmisSecours will use the three fields above to decide upon when to send "
 "email:"
 msgstr ""
-"RandoAmisSecours décidera de l'envoie des mails suivant le contenu des trois "
-"champs ci-dessus :"
+"RandoAmisSecours decide del envio de correos segun el contenido de los tres campos "
+"siguientes:"
 
 #: templates/RandoAmisSecours/outing/create.html:109
 msgid "Beginning"
@@ -1035,9 +1037,9 @@ msgid ""
 "After the ending R.A.S. sends emails to the owner. After the alert, friends "
 "are also emailed until the outing is closed."
 msgstr ""
-"Dès que l'horaire de fin est passé, R.A.S. vous enverra un mail. Si "
-"l'horaire de l'alerte est atteint, les mails seront également envoyés à vos "
-"amis, et ce jusqu'à ce que la sortie soit cloturée."
+"Cuando llegue la hora de fin, R.A.S le enviará un correo. Si "
+"llega la hora de alerta, se enviaran correos a sus amigos "
+"hasta que se cierre la salida."
 
 #: templates/RandoAmisSecours/outing/details.html:4
 #, python-format
