@@ -331,7 +331,7 @@ msgid ""
 "We've emailed you instructions for setting your password to the email "
 "address you submitted. You should be receiving it shortly."
 msgstr "Le hemos enviado instrucciones para definir su contraseña a su direccion"
-"de correo. Debería recibirlo dentro de poco."
+"de correo. Debería recibirlas dentro de poco."
 
 #: templates/RandoAmisSecours/account/password_reset_email.txt:2
 #, python-format
@@ -676,17 +676,17 @@ msgid ""
 "-- \n"
 "The R.A.S team"
 msgstr ""
-"Bonjour,\n"
+"Hola,\n"
 "\n"
-"%(fullname)s est en retard sur l'horaire prévu pour la sortie «%(name)s», "
-"qui devait finir le %(ending)s.\n"
+"%(fullname)s no ha vuelto a tiempo de la salida «%(name)s», "
+"que se tenia que acabar el %(ending)s.\n"
 "\n"
-"Pour plus d'information sur la sortie, visitez : %(URL)s.\n"
+"Para tener mas informaciones sobre la salida, consulte la página : %(URL)s.\n"
 "\n"
-"Pour en savoir plus, essayez de contacter %(fullname)s directement.\n"
+"Para aclarar la situación, debería intentar contactar con %(fullname)s directamente.\n"
 "\n"
 "-- \n"
-"L'équipe R.A.S."
+"El equipo R.A.S."
 
 #: templates/RandoAmisSecours/alert/late.html:1
 #, python-format
@@ -700,14 +700,14 @@ msgid ""
 "-- \n"
 "The R.A.S team"
 msgstr ""
-"Bonjour,\n"
+"Hola,\n"
 "\n"
-"vous êtes en retard sur l'horaire prévu pour la sortie %(URL)s.\n"
+"Esta llegando mas tarde que la hora prevista de la salida %(URL)s.\n"
 "\n"
-"Si vous êtes de retour, merci de le signaler en cliquant sur %(SAFE_URL)s.\n"
+"Si ya esta de vuelta, gracias por señalarlo haciendo clic aqui %(SAFE_URL)s.\n"
 "\n"
 "-- \n"
-"L'équipe R.A.S."
+"El equipo R.A.S."
 
 #: templates/RandoAmisSecours/friends/request_accepted_email.html:1
 #, python-format
@@ -719,13 +719,12 @@ msgid ""
 "-- \n"
 "The R.A.S. team"
 msgstr ""
-"Bonjour %(to)s,\n"
+"Hola %(to)s,\n"
 "\n"
-"%(from)s a accepté votre demande d'ajout à votre liste d'amis sur "
-"RandoAmisSecours.\n"
+"%(from)s ha aceptado su petición como amigo en RandoAmisSecours.\n"
 "\n"
 "-- \n"
-"L'équipe R.A.S."
+"El equipo R.A.S."
 
 #: templates/RandoAmisSecours/friends/request_email.html:1
 #, python-format
@@ -741,38 +740,38 @@ msgid ""
 "-- \n"
 "The R.A.S. team"
 msgstr ""
-"Bonjour %(to)s,\n"
+"Hola %(to)s,\n"
 "\n"
-"%(from)s voudrait vous ajouter à sa liste d'amis sur RandoAmisSecours.\n"
+"%(from)s quiere añadirle a su lista de amigos en RandoAmisSecours.\n"
 "\n"
-"Vous pouvez :\n"
-" * accepter : %(accept)s\n"
-" * refuser : %(refuse)s\n"
+"Usted puede :\n"
+" * aceptar : %(accept)s\n"
+" * rechazar : %(refuse)s\n"
 "\n"
 "-- \n"
-"L'équipe R.A.S."
+"El equipo R.A.S."
 
 #: templates/RandoAmisSecours/friends/search.html:4
 #: templates/RandoAmisSecours/friends/search.html:14
 msgid "Search friends"
-msgstr "Chercher des amis"
+msgstr "Buscar amigos"
 
 #: templates/RandoAmisSecours/friends/search.html:9
 #: templates/RandoAmisSecours/friends/search.html:35
 msgid "Search"
-msgstr "Chercher"
+msgstr "Buscar"
 
 #: templates/RandoAmisSecours/friends/search.html:30
 msgid "Search for friends using the field below."
-msgstr "Utilisez le champs ci-dessous pour rechercher des amis."
+msgstr "Utilice el campo abajo para buscar amigos."
 
 #: templates/RandoAmisSecours/friends/search.html:39
 msgid "The query should be at least 3 characters long."
-msgstr "La recherche doit faire au minimum 3 caractères."
+msgstr "La busqueda requiere como minimo 3 caracteres."
 
 #: templates/RandoAmisSecours/friends/search.html:67
 msgid "No matching user"
-msgstr "Pas d'utilisateur correspondant"
+msgstr "Ningun usuario encontrado"
 
 #: templates/RandoAmisSecours/help/index.html:18
 #: templates/RandoAmisSecours/help/qa.html:14
@@ -784,8 +783,8 @@ msgid ""
 "Find out more information about R.A.S. in the Q&A section. Most common "
 "questions along with their answers should be available their."
 msgstr ""
-"Plus d'informations sur R.A.S. dans la FAQ. Les questions les plus courantes "
-"devraient y être traitées."
+"Mas información sobre R.A.S. en las preguntas frecuentes. Las preguntas mas habituales "
+"deberián aparecer con sus respuestas."
 
 #: templates/RandoAmisSecours/help/index.html:20
 msgid "Visit Q&A page"
@@ -801,8 +800,8 @@ msgid ""
 "The tutorial describes how to create, confirm and then close an outing. This "
 "tutorial will be available soon."
 msgstr ""
-"Ce tutoriel explique comment créer, confirmer et cloturer une sortie. Celui-"
-"ci sera bientôt disponible."
+"El tutorial enseña como crear, confirmar y cerrar una salida. Este"
+"tutorial sera disponible dentro de poco."
 
 #: templates/RandoAmisSecours/help/qa.html:4
 #: templates/RandoAmisSecours/help/qa.html:9
@@ -814,8 +813,8 @@ msgid ""
 "This page lists the most common questions and concerns about the R.A.S. "
 "website. If your question is missing, feel free to contact the R.A.S. team."
 msgstr ""
-"Cette page liste les questions les plus courantes à propos de R.A.S. Si "
-"votre question ne s'y trouve pas, vous pouvez contacter l'équipe R.A.S."
+"Aqui estan las preguntas mas frecuentes sobre R.A.S. Si "
+"su pregunta no aparece, puede contactar con el equipo R.A.S."
 
 #: templates/RandoAmisSecours/help/qa.html:22
 msgid "1/ Calling emergency services"
@@ -827,9 +826,9 @@ msgid ""
 "services directly. It's your friends' duty to call public services only if "
 "necessary."
 msgstr ""
-"Si vous n'êtes pas rentré à temps, l'équipe R.A.S. n'appelera pas les "
-"services de secours. C'est est de la responsabilité de vos amis d'appeler "
-"les secours, s'ils l'estiment nécessaire."
+"Si usted no vuelve a tiempo, el equipo R.A.S. no llamará a los servicios "
+"de rescate. Es responsabilidad de sus amigos de contactar con ellos si lo"
+"juzgan necesario."
 
 #: templates/RandoAmisSecours/help/qa.html:24
 msgid "2/ Reliability"
@@ -841,9 +840,9 @@ msgid ""
 "effort is made to keep the server hosting R.A.S. up and running. However we "
 "cannot 100% guarantee this."
 msgstr ""
-"Nous nous efforçons de rendre le site web R.A.S. aussi sûr que possible. "
-"Nous essayons également de garder le serveur hébergeant R.A.S. fonctionnel. "
-"Il ne nous est cependant pas possible de le garantir à 100%."
+"Intentamos que el servicio R.A.S. sea lo mas seguro y fiable posible."
+"Igualmente hacemos todo lo posible para mantener operativo el servidor que aloja R.A.S. "
+"Sin embargo, no podemos garantizar esto al 100%."
 
 #: templates/RandoAmisSecours/help/qa.html:26
 msgid "3/ Confidentiality"
@@ -855,9 +854,9 @@ msgid ""
 "This is the same for your personnal data (your phone number for instance). "
 "So be careful when accepting friends."
 msgstr ""
-"Les sorties que vous créer sont uniquement visible pour vous et vos amis. Il "
-"en est de même pour vos données personnelles (votre numéro de téléphone par "
-"exemple). Soyez donc attentif lorsque vous acceptez de nouveaux amis."
+"Las salidas que crea son visibles solo por usted y sus amigos. Ocurre lo "
+"mismo con sus datos personales (su numero de telefono por "
+"ejemplo). Tenga cuidado cuando agregue nuevos amigos."
 
 #: templates/RandoAmisSecours/help/qa.html:28
 msgid "4/ Warranties"
@@ -868,8 +867,8 @@ msgid ""
 "We are trying to get R.A.S. as secure and reliable as possible. However the "
 "service is provided without any warranties."
 msgstr ""
-"Nous essayons de rendre R.A.S. aussi sécurisé et sûr que possible. Cependant "
-"ce service est disponible sans aucune garanties."
+"Intentamos que el servicio R.A.S. sea lo mas seguro y fiable posible. Sin embargo "
+"proveemos este servicio sin garantias."
 
 #: templates/RandoAmisSecours/main/index.html:4
 msgid "Main Page"
@@ -936,7 +935,7 @@ msgstr ""
  
 #: templates/RandoAmisSecours/main/index.html:57
 msgid "R.A.S. will email your friends if you are not back on time."
-msgstr "R.A.S enviará un correo a tus amigos si no vuelves a casa a la hora prevista."
+msgstr "R.A.S enviará un correo a sus amigos si no vuelve a casa a la hora prevista."
 
 #: templates/RandoAmisSecours/main/index.html:58
 msgid "Search »"
@@ -1106,7 +1105,7 @@ msgstr "Acabar la salida"
 #: templates/RandoAmisSecours/outing/index.html:79
 #, python-format
 msgid "Confirm that you are back home safe from «%(name)s» ?"
-msgstr "Confirmas que has vuelto a casa de la salida «%(name)s» ?"
+msgstr "Confirma que usted ha vuelto en seguridad de la salida «%(name)s» ?"
 
 #: templates/RandoAmisSecours/outing/index.html:83
 msgid "Finish"
@@ -1156,7 +1155,7 @@ msgstr "No hay salidas acabadas"
 
 #: templates/RandoAmisSecours/outing/index.html:199
 msgid "Friends Outings"
-msgstr "Salidas de tus amigos"
+msgstr "Salidas de sus amigos"
 
 #: views/account.py:156
 msgid "Subscription to R.A.S."
