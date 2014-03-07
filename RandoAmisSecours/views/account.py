@@ -122,7 +122,6 @@ class RASUserCreationForm(UserCreationForm):
         # email, first_name and last_name are required
         self.fields['email'].required = True
         self.fields['first_name'].required = True
-        self.fields['last_name'].required = True
 
         self.fields['username'].widget.attrs['class'] = 'form-control'
         self.fields['password1'].widget.attrs['class'] = 'form-control'
@@ -156,7 +155,6 @@ class RASUserUpdateForm(ModelForm):
         super(RASUserUpdateForm, self).__init__(*args, **kwargs)
         # first_name and last_name are required
         self.fields['first_name'].required = True
-        self.fields['last_name'].required = True
         self.fields['first_name'].widget.attrs['autofocus'] = 'autofocus'
 
         self.fields['first_name'].widget.attrs['class'] = 'form-control'
@@ -233,7 +231,7 @@ def update(request):
             # Update the language code and activate it for the message
             if profile.language:
                 request.session['django_language'] = profile.language
-                request.session['django_timezone'] = pytz.timezone(profile.timezone)
+                request.session['django_timezone'] = profile.timezone
                 translation.activate(profile.language)
             # Print the message
             messages.success(request, _("Personnal information updated"))

@@ -36,6 +36,7 @@ class OutingForm(ModelForm):
     class Meta:
         model = Outing
         fields = ('name', 'description', 'beginning', 'ending', 'alert', 'latitude', 'longitude')
+        localized_fields = ('beginning', 'ending', 'alert')
 
     def __init__(self, *args, **kwargs):
         super(OutingForm, self).__init__(*args, **kwargs)
@@ -104,6 +105,21 @@ def details(request, outing_id):
                                'FINISHED': FINISHED,
                                'CONFIRMED': CONFIRMED,
                                'DRAFT': DRAFT},
+                              context_instance=RequestContext(request))
+
+
+@login_required
+def details_trace(request, outing_id):
+    # Return 404 if the outing does not belong to the user or his friends
+    outing = get_object_or_404(Outing, Q(user=request.user) | Q(user__profile__in=request.user.profile.friends.all()), pk=outing_id)
+
+    # Return 404 if the outing is not late
+    #if not outing.is_late():
+    #    raise Http404
+
+    return render_to_response('RandoAmisSecours/outing/details_trace.html',
+                              {'outing': outing,
+                               'points': outing.gpspoint_set.all()},
                               context_instance=RequestContext(request))
 
 
