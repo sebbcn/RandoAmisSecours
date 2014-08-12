@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4
 
-# Copyright 2013 Rémi Duraffort
+# Copyright 2013, 2014 Rémi Duraffort
 # This file is part of RandoAmisSecours.
 #
 # RandoAmisSecours is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ from django.conf.urls import include, patterns, url
 from django.core.urlresolvers import reverse_lazy
 from tastypie.api import Api
 
-from RandoAmisSecours.api import OutingResource, ProfileResource, UserResource, GPSPointResource
+from RandoAmisSecours.api import OutingResource, ProfileResource, UserResource, GPSPointResource, LoginResource
 from RandoAmisSecours.views.account import RASAuthenticationForm, RASPasswordChangeForm, RASPasswordResetForm, RASSetPasswordForm
 
 
@@ -79,12 +79,20 @@ urlpatterns += patterns('RandoAmisSecours.views.outing',
     url(r'^outings/(?P<outing_id>\d+)/finish/$', 'finish', name='outings.finish'),
 )
 
+# Reporting
+urlpatterns += patterns('RandoAmisSecours.views.reporting',
+    url(r'^reporting/$', 'index', name='reporting.index'),
+    url(r'^reporting/users/$', 'users', name='reporting.users'),
+    url(r'^reporting/outings/late/$', 'outings_late', name='reporting.outings.late'),
+)
+
 # API v1.0
 api_1_0 = Api(api_name='1.0')
 api_1_0.register(OutingResource())
 api_1_0.register(ProfileResource())
 api_1_0.register(UserResource())
 api_1_0.register(GPSPointResource())
+api_1_0.register(LoginResource())
 
 urlpatterns += patterns('',
   url(r'^api/', include(api_1_0.urls)),

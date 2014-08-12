@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4
 
-# Copyright 2013 Rémi Duraffort
+# Copyright 2013, 2014 Rémi Duraffort
 # This file is part of RandoAmisSecours.
 #
 # RandoAmisSecours is free software: you can redistribute it and/or modify
@@ -24,19 +24,68 @@ from django.core.mail import send_mail
 from django.template import loader
 from django.utils import timezone, translation
 
+import logging
+import json
 import pytz
+from SMSForward import providers
+
+logger = logging.getLogger('ras.utils')
+
+
+class Localize(object):
+    def __init__(self, language, timezone):
+        self.language = language
+        self.timezone = timezone
+
+    def __enter__(self):
+        if self.language:
+            translation.activate(self.language)
+        if self.timezone:
+            timezone.activate(pytz.timezone(self.timezone))
+
+    def __exit__(self, type_name, value, traceback):
+        if self.timezone:
+            timezone.deactivate()
+        if self.language:
+            translation.deactivate()
 
 
 def send_localized_mail(user, subject, template_name, ctx):
-    if user.profile.language:
-        translation.activate(user.profile.language)
-    if user.profile.timezone:
-        timezone.activate(pytz.timezone(user.profile.timezone))
+    with Localize(user.profile.language,
+                  user.profile.timezone):
+        send_mail_help(user, subject, template_name, ctx)
 
+
+def send_mail_help(user, subject, template_name, ctx):
     body = loader.render_to_string(template_name, ctx)
+    logger.info("Sending email to '%s' ('%s')", user.get_full_name(),
+                user.email, extra={'data': ctx})
     send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [user.email])
 
-    if user.profile.timezone:
-        timezone.deactivate()
-    if user.profile.language:
-        translation.deactivate()
+
+def send_sms(user, template_name, ctx):
+    # Check that the provider is available
+    if not user.profile.provider or not user.profile.provider_data:
+        return
+
+    logger.info("Sending SMS to '%s' ('%s')",
+                user.get_full_name(), user.profile.provider,
+                extra={'data': ctx})
+    msg = loader.render_to_string(template_name, ctx)
+
+    # Create the provider object
+    try:
+        provider = providers.create(user.profile.provider,
+                                    json.loads(user.profile.provider_data))
+    except NotImplementedError:
+        logger.error("Unknown provider '%s'", user.profile.provider,
+                     exc_info=True,
+                     extra={'data': {'user': user.get_full_name(),
+                                     'provider': user.profile.provider}})
+
+    try:
+        provider.send_message(msg)
+    except Exception:
+        logger.error("Unable to send SMS", exc_info=True,
+                     extra={'data': {'user': user.get_full_name(),
+                                     'provider': user.profile.provider}})

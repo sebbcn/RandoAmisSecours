@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4
 
-# Copyright 2013, 2014 Rémi Duraffort
+# Copyright 2014 Rémi Duraffort
 # This file is part of RandoAmisSecours.
 #
 # RandoAmisSecours is free software: you can redistribute it and/or modify
@@ -17,26 +17,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with RandoAmisSecours.  If not, see <http://www.gnu.org/licenses/>
 
-from __future__ import unicode_literals
-
-from django.contrib.auth.signals import user_logged_in
-from django.contrib.auth.models import User
-from django.db import models
-from django.dispatch import receiver
-
-from tastypie.models import create_api_key
+from django import template
+from django.utils.timezone import datetime, utc
+from django.utils.timesince import timesince
+from django.utils.translation import ugettext as _
 
 
-@receiver(user_logged_in)
-def set_profile_info(sender, **kwargs):
-    """ Set language and timezone if defined in the profile """
-    language = kwargs['user'].profile.language
-    if language:
-        kwargs['request'].session['django_language'] = language
-
-    tz = kwargs['user'].profile.timezone
-    if tz:
-        kwargs['request'].session['django_timezone'] = tz
+register = template.Library()
 
 
-models.signals.post_save.connect(create_api_key, sender=User)
+@register.filter
+def timedelta(value):
+    if not value:
+        return ''
+
+    now = datetime.utcnow().replace(tzinfo=utc)
+    if value > now:
+        return _("in %s") % timesince(now, value)
+    else:
+        return timesince(value, now)

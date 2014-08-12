@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4
 
-# Copyright 2013 Rémi Duraffort
+# Copyright 2013, 2014 Rémi Duraffort
 # This file is part of RandoAmisSecours.
 #
 # RandoAmisSecours is free software: you can redistribute it and/or modify
@@ -19,14 +19,17 @@
 
 from __future__ import unicode_literals
 
-from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import datetime, utc
 from django.utils.translation import ugettext_noop as _
+from django.utils.translation import ugettext
 
+from RandoAmisSecours.settings import LANGUAGES
 import binascii
+import json
 import pytz
 import os
 
@@ -45,9 +48,13 @@ OUTING_STATUS = (
     (CANCELED, _('canceled'))
 )
 
+PROVIDERS = (
+    ('mobile.free.fr', 'Free Mobile France'),
+)
+
 
 def random_hash():
-    """ Create a random string of size 15 """
+    """ Create a random string of size 30 """
     return binascii.b2a_hex(os.urandom(15))
 
 
@@ -59,9 +66,21 @@ class Profile(models.Model):
     user = models.OneToOneField(User)
     friends = models.ManyToManyField('self', blank=True, null=True)
     phone_number = models.CharField(max_length=30, blank=True, null=True)
+    provider = models.CharField(max_length=30, blank=True, null=True, choices=PROVIDERS)
+    provider_data = models.TextField(blank=True, null=True)
     hash_id = models.CharField(unique=True, max_length=30, default=random_hash)
-    language = models.CharField(max_length=4, blank=True, null=True, choices=settings.LANGUAGES)
+    language = models.CharField(max_length=4, blank=True, null=True, choices=LANGUAGES)
     timezone = models.CharField(max_length=40, choices=[(tz, tz) for tz in pytz.all_timezones], default='UTC')
+
+    def clean(self):
+        if self.provider_data:
+            try:
+                json.loads(self.provider_data)
+            except Exception:
+                raise ValidationError({'provider_data': [ugettext('This should be JSON serialized')]})
+
+        if self.timezone == 'UTC':
+            raise ValidationError({'timezone': [ugettext('UTC is not valid timezone')]})
 
     def __str__(self):
         return "%s" % (self.user)
@@ -138,10 +157,14 @@ class Outing(models.Model):
         now = datetime.utcnow().replace(tzinfo=utc)
         return self.alert <= now
 
+    is_running.boolean = True
+    is_late.boolean = True
+    is_alerting.boolean = True
+
 
 @python_2_unicode_compatible
 class GPSPoint(models.Model):
-    class meta:
+    class Meta:
         app_label = 'RandoAmisSecours'
         ordering = ['date']
 
@@ -153,5 +176,5 @@ class GPSPoint(models.Model):
 
     def __str__(self):
         return "[%s] %s: (%f, %f)" % (self.outing.user.get_full_name(),
-                                     self.outing.name, self.latitude,
-                                     self.longitude)
+                                      self.outing.name, self.latitude,
+                                      self.longitude)

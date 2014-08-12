@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4
 
-# Copyright 2013 Rémi Duraffort
+# Copyright 2013, 2014 Rémi Duraffort
 # This file is part of RandoAmisSecours.
 #
 # RandoAmisSecours is free software: you can redistribute it and/or modify
@@ -113,9 +113,9 @@ def details_trace(request, outing_id):
     # Return 404 if the outing does not belong to the user or his friends
     outing = get_object_or_404(Outing, Q(user=request.user) | Q(user__profile__in=request.user.profile.friends.all()), pk=outing_id)
 
-    # Return 404 if the outing is not late
-    #if not outing.is_late():
-    #    raise Http404
+    # Friends can only access traces when the outing is late
+    if not outing.is_late() and not outing.is_alerting() and not outing.user.pk == request.user.pk:
+        raise Http404
 
     return render_to_response('RandoAmisSecours/outing/details_trace.html',
                               {'outing': outing,

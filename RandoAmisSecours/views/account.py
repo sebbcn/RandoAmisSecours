@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4
 
-# Copyright 2013 Rémi Duraffort
+# Copyright 2013, 2014 Rémi Duraffort
 # This file is part of RandoAmisSecours.
 #
 # RandoAmisSecours is free software: you can redistribute it and/or modify
@@ -19,25 +19,21 @@
 
 from __future__ import unicode_literals
 
-from django import forms
 from django.contrib import messages
-from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.forms import ModelForm
+from django.forms.widgets import HiddenInput
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from RandoAmisSecours.models import Profile, FriendRequest, CONFIRMED, DRAFT, LATE, FINISHED
+from RandoAmisSecours.models import Profile, FriendRequest
 from RandoAmisSecours.utils import send_localized_mail
-
-import pytz
 
 
 class RASAuthenticationForm(AuthenticationForm):
@@ -164,13 +160,17 @@ class RASUserUpdateForm(ModelForm):
 class RASProfileUpdateForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ('phone_number', 'language', 'timezone')
+        fields = ('phone_number', 'language', 'timezone', 'provider', 'provider_data')
 
     def __init__(self, *args, **kwargs):
         super(RASProfileUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['language'].required = True
+        self.fields['timezone'].required = True
         self.fields['phone_number'].widget.attrs['class'] = 'form-control'
         self.fields['language'].widget.attrs['class'] = 'form-control'
         self.fields['timezone'].widget.attrs['class'] = 'form-control'
+        self.fields['provider'].widget.attrs['class'] = 'form-control'
+        self.fields['provider_data'].widget = HiddenInput()
 
 
 def register(request):
@@ -181,7 +181,8 @@ def register(request):
             send_localized_mail(new_user, _('Subscription to R.A.S.'),
                                 'RandoAmisSecours/account/register_email.html',
                                 {'URL': request.build_absolute_uri(reverse('accounts.register.confirm',
-                                                                   args=[new_user.pk, new_user.profile.hash_id])),
+                                                                           args=[new_user.pk,
+                                                                                 new_user.profile.hash_id])),
                                  'fullname': new_user.get_full_name()})
             return render_to_response('RandoAmisSecours/account/register_end.html', context_instance=RequestContext(request))
         else:
@@ -209,6 +210,11 @@ def register_confirm(request, user_id, user_hash):
 
 @login_required
 def profile(request):
+    # Force the user to provide language and timezone
+    if not request.user.profile.language or request.user.profile.timezone == 'UTC':
+        messages.error(request, _("You should update your timezone. Without it R.A.S. will not work as expected."))
+        return HttpResponseRedirect(reverse('accounts.profile.update'))
+
     friend_requests = FriendRequest.objects.filter(to=request.user)
     friend_requests_sent = FriendRequest.objects.filter(user=request.user)
 
@@ -226,13 +232,15 @@ def update(request):
         user_form = RASUserUpdateForm(request.POST, instance=request.user)
         profile_form = RASProfileUpdateForm(request.POST, instance=profile)
         if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save()
+            user_form.save()
             profile = profile_form.save()
             # Update the language code and activate it for the message
             if profile.language:
                 request.session['django_language'] = profile.language
-                request.session['django_timezone'] = profile.timezone
                 translation.activate(profile.language)
+            # Update the timezone if needed
+            if profile.timezone:
+                request.session['django_timezone'] = profile.timezone
             # Print the message
             messages.success(request, _("Personnal information updated"))
             return HttpResponseRedirect(reverse('accounts.profile'))

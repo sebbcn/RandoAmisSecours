@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4
 
-# Copyright 2013 Rémi Duraffort
+# Copyright 2013, 2014 Rémi Duraffort
 # This file is part of RandoAmisSecours.
 #
 # RandoAmisSecours is free software: you can redistribute it and/or modify
@@ -21,14 +21,17 @@ from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.urlresolvers import reverse
+from django.utils.timesince import timesince
 from django.utils.timezone import datetime, utc
 from django.utils.translation import ugettext_lazy as _
 
-from RandoAmisSecours.models import Outing, Profile, CONFIRMED
-from RandoAmisSecours.utils import send_localized_mail
+from RandoAmisSecours.models import Outing, CONFIRMED, DRAFT
+from RandoAmisSecours.utils import Localize, send_mail_help, send_sms
 
+import logging
 from optparse import make_option
-import pytz
+
+logger = logging.getLogger('ras.alert')
 
 
 class Command(BaseCommand):
@@ -53,39 +56,93 @@ class Command(BaseCommand):
         if kwargs.get('base_url', None) is None:
             raise CommandError('url option is required')
 
-        self.stdout.write("Listing alerting outings")
-        self.stdout.write("Interval %d" % (kwargs['interval']))
-
+        logger.info("Running Alert script")
         now = datetime.utcnow().replace(tzinfo=utc)
+
+        # Transform all DRAFT into CONFIRMED if the beginning is over
+        logger.debug('Transforming DRAFTs')
+        outings = Outing.objects.filter(status=DRAFT, beginning__lt=now)
+        for outing in outings:
+            logger.info("Confirm: '%s' (owner: '%s')", outing.name,
+                        outing.user.get_full_name())
+            outing.status = CONFIRMED
+            outing.save()
+
+        # Grab all late outings
+        logger.debug('Alerting owner and friends')
         outings = Outing.objects.filter(status=CONFIRMED, ending__lt=now)
 
         for outing in outings:
-            self.stdout.write(" - %s" % (outing.name))
+            logger.debug("Inspecting: '%s' (owner: '%s')", outing.name,
+                         outing.user.get_full_name())
             # Late outings
             if outing.ending <= now and now < outing.alert:
-                minutes = (now - outing.alert).seconds / 60.0
+                logger.debug(' |-> Late')
+                minutes = (now - outing.ending).seconds / 60.0
                 minutes = minutes % kwargs['alert']
 
                 if 0 <= minutes and minutes < kwargs['interval']:
-                    self.stdout.write("Sending mail to owner")
+                    logger.debug(' |--> Alerting the owner')
+                    logger.debug("     |-> %s", outing.user.get_full_name())
+                    logger.debug("     |--> email: %s", outing.user.email)
+                    logger.debug("     |--> provider: %s", outing.user.profile.provider)
                     # send a mail to the user, translated into the right language
-                    send_localized_mail(outing.user, _('[R.A.S] Alert'),
-                                        'RandoAmisSecours/alert/late.html',
-                                        {'URL': "%s%s" % (kwargs['base_url'], reverse('outings.details', args=[outing.pk])),
-                                         'SAFE_URL': "%s%s" % (kwargs['base_url'], reverse('outings.finish', args=[outing.pk]))})
+                    with Localize(outing.user.profile.language,
+                                  outing.user.profile.timezone):
+                        send_mail_help(outing.user, _('[R.A.S] Alert'),
+                                       'RandoAmisSecours/alert/late.html',
+                                       {'URL': "%s%s" % (kwargs['base_url'],
+                                                         reverse('outings.details', args=[outing.pk])),
+                                        'SAFE_URL': "%s%s" % (kwargs['base_url'],
+                                                              reverse('outings.finish', args=[outing.pk]))})
+                        send_sms(outing.user, 'RandoAmisSecours/alert/late.txt',
+                                 {'name': outing.name})
 
             # Alerting outings
             elif outing.alert <= now:
+                logger.debug(' |-> Alert')
                 minutes = (now - outing.alert).seconds / 60.0
                 minutes = minutes % kwargs['alert']
 
-                self.stdout.write("  minutes: %d" % (minutes))
                 if 0 <= minutes and minutes < kwargs['interval']:
-                    self.stdout.write("emailing friends")
+                    logger.debug(' |--> Alerting now')
+                    friend_count = outing.user.profile.friends.count()
+                    logger.debug(" |---> %d friends to contact", friend_count)
                     # Send on mail per user translated into the right language
                     for friend_profile in outing.user.profile.friends.all():
-                        send_localized_mail(friend_profile.user, _('[R.A.S] Alert'),
-                                            'RandoAmisSecours/alert/alert.html',
-                                            {'fullname': outing.user.get_full_name(),
-                                             'URL': "%s%s" % (kwargs['base_url'], reverse('outings.details', args=[outing.pk])),
-                                             'name': outing.name, 'ending': outing.ending})
+                        logger.debug("      |-> %s", friend_profile.user.get_full_name())
+                        logger.debug("      |--> email: %s", friend_profile.user.email)
+                        logger.debug("      \--> provider: %s", friend_profile.provider)
+                        with Localize(friend_profile.language,
+                                      friend_profile.timezone):
+                            send_mail_help(friend_profile.user, _('[R.A.S] Alert'),
+                                           'RandoAmisSecours/alert/alert.html',
+                                           {'fullname': outing.user.get_full_name(),
+                                            'URL': "%s%s" % (kwargs['base_url'], reverse('outings.details', args=[outing.pk])),
+                                            'name': outing.name,
+                                            'ending': outing.ending})
+                            send_sms(friend_profile.user,
+                                     'RandoAmisSecours/alert/alert.txt',
+                                     {'fullname': outing.user.get_full_name(),
+                                      'name': outing.name,
+                                      'ending': timesince(outing.ending)})
+                    logger.debug(' |--> Alerting the owner')
+                    logger.debug("     |-> %s", outing.user.get_full_name())
+                    logger.debug("     |--> email: %s", outing.user.email)
+                    logger.debug("     |--> provider: %s", outing.user.profile.provider)
+                    with Localize(outing.user.profile.language,
+                                  outing.user.profile.timezone):
+                        send_mail_help(outing.user, _('[R.A.S] Alert'),
+                                       'RandoAmisSecours/alert/alert_owner.html',
+                                       {'fullname': outing.user.get_full_name(),
+                                        'URL': "%s%s" % (kwargs['base_url'],
+                                                         reverse('outings.details', args=[outing.pk])),
+                                        'name': outing.name,
+                                        'ending': outing.ending,
+                                        'friend_count': friend_count})
+                        send_sms(outing.user,
+                                 'RandoAmisSecours/alert/alert_owner.txt',
+                                 {'name': outing.name,
+                                  'ending': timesince(outing.ending)})
+
+        logger.info("End of Alert script")

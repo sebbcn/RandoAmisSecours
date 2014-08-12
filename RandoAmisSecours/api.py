@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: set ts=4
 
-# Copyright 2013 Rémi Duraffort
+# Copyright 2013, 2014 Rémi Duraffort
 # This file is part of RandoAmisSecours.
 #
 # RandoAmisSecours is free software: you can redistribute it and/or modify
@@ -23,10 +23,11 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 
 from tastypie import fields
-from tastypie.authentication import BasicAuthentication
+from tastypie.authentication import ApiKeyAuthentication, BasicAuthentication
 from tastypie.authorization import Authorization
 from tastypie.exceptions import Unauthorized
-from tastypie.resources import ModelResource
+from tastypie.models import ApiKey
+from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 
 from RandoAmisSecours.models import Outing, Profile, GPSPoint
 
@@ -50,14 +51,14 @@ class UserAuthorization(Authorization):
     def update_list(self, object_list, bundle):
         raise Unauthorized('Updating impossible')
 
-    def update_detail(seld, object_list, bundle):
+    def update_detail(self, object_list, bundle):
         raise Unauthorized('Updating impossible')
 
     def delete_list(self, object_list, bundle):
-        raise Unathorized('Deletion impossible')
+        raise Unauthorized('Deletion impossible')
 
     def delete_detail(self, object_list, bundle):
-        raise Unathorized('Deletion impossible')
+        raise Unauthorized('Deletion impossible')
 
 
 class ProfileAuthorization(Authorization):
@@ -79,19 +80,20 @@ class ProfileAuthorization(Authorization):
     def update_list(self, object_list, bundle):
         raise Unauthorized('Updating impossible')
 
-    def update_detail(seld, object_list, bundle):
+    def update_detail(self, object_list, bundle):
         raise Unauthorized('Updating impossible')
 
     def delete_list(self, object_list, bundle):
-        raise Unathorized('Deletion impossible')
+        raise Unauthorized('Deletion impossible')
 
     def delete_detail(self, object_list, bundle):
-        raise Unathorized('Deletion impossible')
+        raise Unauthorized('Deletion impossible')
 
 
 class OutingAuthorization(Authorization):
     def read_list(self, object_list, bundle):
-        return object_list.filter(Q(user=bundle.request.user) | Q(user__profile__in=bundle.request.user.profile.friends.all()))
+        return object_list.filter(Q(user=bundle.request.user) |
+                                  Q(user__profile__in=bundle.request.user.profile.friends.all()))
 
     def read_detail(self, object_list, bundle):
         # bundle.obj is an Outing
@@ -99,23 +101,22 @@ class OutingAuthorization(Authorization):
                 bundle.obj.user.profile in bundle.request.user.profile.friends.all())
 
     def create_list(self, object_list, bundle):
-        # TODO: is the user auto assigned
-        return object_list
+        raise Unauthorized('Creation impossible')
 
     def create_detail(self, object_list, bundle):
-        return bundle.obj.user == bundle.request.user
+        raise Unauthorized('Creation impossible')
 
     def update_list(self, object_list, bundle):
-        return [obj for obj in object_list if obj.user == bundle.request.user]
+        raise Unauthorized('Updating impossible')
 
-    def update_detail(seld, object_list, bundle):
-        return bundle.obj.user == bundle.request.user
+    def update_detail(self, object_list, bundle):
+        raise Unauthorized('Updating impossible')
 
     def delete_list(self, object_list, bundle):
-        return [obj for obj in object_list if obj.user == bundle.request.user]
+        raise Unauthorized('Deletion impossible')
 
     def delete_detail(self, object_list, bundle):
-        return bundle.obj.user == bundle.request.user
+        raise Unauthorized('Deletion impossible')
 
 
 class GPSPointAuthorization(Authorization):
@@ -129,22 +130,22 @@ class GPSPointAuthorization(Authorization):
                 bundle.obj.outing.user.profile in bundle.request.user.profile.friends.all())
 
     def create_list(self, object_list, bundle):
-        return [obj for obj in object_list if obj.outing.user == bundle.request.user]
+        raise Unauthorized('Creation impossible')
 
     def create_detail(self, object_list, bundle):
-        return bundle.obj.outing.user == bundle.request.user
+        raise Unauthorized('Creation impossible')
 
     def update_list(self, object_list, bundle):
-        return [obj for obj in object_list if obj.outing.user == bundle.request.user]
+        raise Unauthorized('Updating impossible')
 
-    def update_detail(seld, object_list, bundle):
-        return bundle.obj.outing.user == bundle.request.user
+    def update_detail(self, object_list, bundle):
+        raise Unauthorized('Updating impossible')
 
     def delete_list(self, object_list, bundle):
-        raise Unathorized('Deletion impossible')
+        raise Unauthorized('Deletion impossible')
 
     def delete_detail(self, object_list, bundle):
-        raise Unathorized('Deletion impossible')
+        raise Unauthorized('Deletion impossible')
 
 
 class UserResource(ModelResource):
@@ -153,9 +154,12 @@ class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['id', 'first_name', 'last_name', 'email']
         allowed_methods = ['get']
-        authentication = BasicAuthentication()
+        filtering = {
+            'id': ALL
+        }
+        authentication = ApiKeyAuthentication()
         authorization = UserAuthorization()
 
 
@@ -168,7 +172,7 @@ class ProfileResource(ModelResource):
         resource_name = 'profile'
         fields = ['phone_number', 'language', 'timezone', 'friends']
         allowed_methods = ['get']
-        authentication = BasicAuthentication()
+        authentication = ApiKeyAuthentication()
         authorization = ProfileAuthorization()
 
     def dehydrate(self, bundle):
@@ -187,8 +191,13 @@ class OutingResource(ModelResource):
     class Meta:
         queryset = Outing.objects.all()
         resource_name = 'outing'
-        fields = ['name', 'description', 'status', 'beginning', 'ending', 'alert', 'latitude', 'longitude']
-        authentication = BasicAuthentication()
+        fields = ['id', 'name', 'description', 'status', 'beginning', 'ending', 'alert', 'latitude', 'longitude']
+        allowed_methods = ['get']
+        filtering = {
+            'user': ALL_WITH_RELATIONS,
+            'status': ['exact', 'gt', 'gte', 'lt', 'lte', 'range']
+        }
+        authentication = ApiKeyAuthentication()
         authorization = OutingAuthorization()
 
 
@@ -199,5 +208,25 @@ class GPSPointResource(ModelResource):
         queryset = GPSPoint.objects.all()
         resource_name = 'GPSPoint'
         fields = ['outing', 'date', 'latitude', 'longitude', 'precision']
-        authentication = BasicAuthentication()
+        allowed_methods = ['get']
+        authentication = ApiKeyAuthentication()
         authorization = GPSPointAuthorization()
+
+
+class LoginResource(ModelResource):
+    class Meta:
+        resource_name = 'login'
+        fields = ['key']
+        allowed_methods = ['get']
+        include_resource_uri = False
+        object_class = ApiKey
+        authentication = BasicAuthentication()
+        authorization = UserAuthorization()
+
+    def obj_get_list(self, bundle, **kwargs):
+        return [ApiKey.objects.get(user=bundle.request.user)]
+
+    def dehydrate(self, bundle):
+        bundle.data['user_id'] = bundle.request.user.id
+        bundle.data['profile_id'] = bundle.request.user.profile.id
+        return bundle
