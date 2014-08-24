@@ -20,6 +20,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
@@ -34,7 +35,7 @@ from RandoAmisSecours.models import CONFIRMED, DRAFT, FINISHED
 class TemplatesTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user('azertyuiop',
+        self.user = User.objects.create_superuser('azertyuiop',
                                              'django.test@project.org',
                                              '12789azertyuiop')
         self.user.profile = Profile.objects.create(user=self.user, language='fr', timezone='Europe/Paris')
@@ -80,6 +81,13 @@ class TemplatesTest(TestCase):
                                        ending=current_time, alert=current_time,
                                        latitude=1, longitude=1)
         self.helper_template(reverse('outings.update', args=[outing.pk]), 'outing/create.html')
+        self.helper_template(reverse('outings.details', args=[outing.pk]), 'outing/details.html')
+        self.helper_template(reverse('outings.details.trace', args=[outing.pk]), 'outing/details_trace.html')
+
+    def test_reporting(self):
+        self.helper_template(reverse('reporting.index'), 'reporting/index.html')
+        self.helper_template(reverse('reporting.users'), 'reporting/users.html')
+        self.helper_template(reverse('reporting.outings.late'), 'reporting/outings_late.html')
 
 
 class LoginRequired(TestCase):
@@ -810,3 +818,26 @@ class AccountTest(TestCase):
         self.assertEqual(len(ctx['friend_requests_sent']), 1)
         self.assertEqual(ctx['friend_requests_sent'][0].user, self.user1)
         self.assertEqual(ctx['friend_requests_sent'][0].to, self.user2)
+
+    def test_profile_provider(self):
+        self.user1.profile.provider_data = 'not JSON serialized'
+        try:
+            self.user1.profile.clean()
+        except ValidationError as e:
+            pass
+        else:
+            self.assertFalse("The clean method should fail here")
+
+        self.user1.profile.provider_data = '{"token": "hello world"}'
+        self.user1.profile.clean()
+
+    def test_profile_timezone(self):
+        self.user1.profile.timezone = 'UTC'
+        try:
+            self.user1.profile.clean()
+        except ValidationError as e:
+            pass
+        else:
+            self.assertFalse("The clean method should fail here")
+        self.user1.profile.timezone = 'Euope/Berlin'
+        self.user1.profile.clean()
